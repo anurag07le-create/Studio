@@ -1,6 +1,10 @@
 // Shared API client for V1 and V2 endpoints
-const API_BASE = '/api';
-const API_V2_BASE = '/api/v2';
+const ENV_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3005/api';
+// Remove trailing slash if present to avoid double slashes
+const BASE_URL = ENV_API_URL.replace(/\/$/, '');
+
+const API_BASE = BASE_URL;
+const API_V2_BASE = `${BASE_URL}/v2`;
 
 async function request(url, options = {}) {
   const response = await fetch(url, {
