@@ -1,5 +1,8 @@
 // StoryGenApp/frontend/src/api.js
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3005/api';
+const PROD_URL = 'https://storygen-backend-9uof.onrender.com/api';
+const DEV_URL = 'http://localhost:3005/api';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? PROD_URL : DEV_URL);
 
 export const generateStoryboardApi = async (sentence, shotCount, style) => {
   try {
