@@ -7,7 +7,8 @@ let socket = null;
 
 export function getSocket() {
   if (!socket) {
-    const url = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3005/api';
+    const url = apiUrl.replace(/\/api\/?$/, ''); // Remove /api suffix for root URL
     socket = io(url, {
       autoConnect: false,
       transports: ['websocket', 'polling'],
