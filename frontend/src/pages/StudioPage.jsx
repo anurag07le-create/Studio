@@ -1,0 +1,653 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
+import * as v2Api from '../api/v2';
+import { generateStoryboardApi, generateVideoApi, listGalleryApi, saveGalleryApi, deleteGalleryApi, regenerateShotImageApi } from '../api';
+import {
+  Title, Text, Button, Group, Stack, SimpleGrid, Card, Badge, Image,
+  Alert, Skeleton, TextInput, Modal, Textarea, Select, NumberInput,
+  Slider, ScrollArea, ActionIcon, Divider, SegmentedControl, Tabs,
+} from '@mantine/core';
+
+const stylePresets = [
+  { value: 'cyberpunk', label: 'Cyberpunk / Neon', text: 'Cinematic neon-noir, teal-magenta palette, volumetric rain and fog, soft bloom, anamorphic lens, shallow depth of field, film grain' },
+  { value: 'filmic', label: 'Filmic Realism', text: 'Filmic realism, natural lighting, soft bokeh, 35mm lens, muted colors, subtle grain' },
+  { value: 'watercolor', label: 'Watercolor', text: 'Watercolor illustration, soft edges, pastel palette, paper texture, gentle gradients' },
+  { value: 'anime', label: 'Anime', text: 'Anime cinematic style, vibrant colors, clean lines, dramatic lighting, expressive characters' },
+  { value: 'noir', label: 'B&W Film Noir', text: 'Black and white film noir, high contrast, strong shadows, rim lighting, grainy texture' },
+  { value: 'ghibli', label: 'Ghibli Style', text: 'Studio Ghibli style, hand-painted backgrounds, soft lighting, whimsical atmosphere, lush nature, dreamy clouds' },
+  { value: 'oilpainting', label: 'Oil Painting', text: 'Classical oil painting style, rich textures, dramatic chiaroscuro lighting, Renaissance composition, visible brushstrokes' },
+  { value: 'pixar', label: 'Pixar 3D', text: 'Pixar 3D animation style, vibrant saturated colors, soft global illumination, expressive characters, detailed textures' },
+  { value: 'inkwash', label: 'Chinese Ink Wash', text: 'Chinese ink wash painting, minimalist composition, flowing brushstrokes, misty mountains, traditional aesthetics, monochrome with subtle color accents' },
+  { value: 'scifi', label: 'Sci-Fi Future', text: 'Futuristic sci-fi, sleek metallic surfaces, holographic displays, blue and orange color scheme, epic scale, lens flares' },
+  { value: 'fantasy', label: 'Fantasy / Magic', text: 'Epic fantasy style, magical glowing elements, dramatic lighting, mythical creatures, rich jewel tones, cinematic composition' },
+  { value: 'retro', label: 'Retro / Vintage', text: 'Vintage retro aesthetic, warm sepia tones, film grain, light leaks, 1970s color palette, nostalgic mood' },
+  { value: 'comic', label: 'American Comic', text: 'American comic book style, bold outlines, halftone dots, dynamic action poses, vibrant primary colors, dramatic shadows' },
+  { value: 'minimalist', label: 'Minimalist', text: 'Minimalist design, clean geometric shapes, limited color palette, negative space, modern aesthetics, subtle gradients' },
+  { value: 'steampunk', label: 'Steampunk', text: 'Steampunk aesthetic, brass and copper machinery, Victorian architecture, gears and clockwork, warm amber lighting, industrial fog' },
+  { value: 'custom', label: 'Custom', text: '' },
+];
+
+export default function StudioPage() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState('projects');
+
+  // ─── Projects state ───
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [creatingProject, setCreatingProject] = useState(false);
+  const [error, setError] = useState(null);
+  const [showNewModal, setShowNewModal] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDescription, setNewDescription] = useState('');
+
+  // ─── Storyboard Generator state ───
+  const [sentence, setSentence] = useState('');
+  const [shotCount, setShotCount] = useState(6);
+  const [styleOption, setStyleOption] = useState('cyberpunk');
+  const [customStyle, setCustomStyle] = useState('');
+  const [storyboard, setStoryboard] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videos, setVideos] = useState([]);
+  const [fullscreenVideo, setFullscreenVideo] = useState(null);
+  const [currentStoryId, setCurrentStoryId] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [regeneratingIndex, setRegeneratingIndex] = useState(null);
+
+  // ─── Gallery / Recent Storyboards state ───
+  const [savedStories, setSavedStories] = useState([]);
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const [viewStory, setViewStory] = useState(null);
+
+  const resolveStyleText = () => {
+    if (styleOption === 'custom') return customStyle;
+    const found = stylePresets.find((s) => s.value === styleOption);
+    return found?.text || '';
+  };
+
+  const loadStoryById = (id, stories) => {
+    const story = stories.find((s) => s.id === id);
+    if (!story) return;
+    setSentence(story.title);
+    setStoryboard(story.storyboard);
+    setShotCount(story.shotCount || story.storyboard.length || 6);
+    if (story.style) { setStyleOption('custom'); setCustomStyle(story.style); }
+    setVideos(story.videos || []);
+    setCurrentStoryId(story.id);
+    setViewStory(null);
+    setActiveTab('storyboard');
+  };
+
+  useEffect(() => {
+    // Fetch projects
+    const fetchProjects = async () => {
+      try {
+        const list = await v2Api.listProjects();
+        setProjects(list);
+      } catch (err) {
+        console.error('Load projects failed', err);
+      } finally {
+        setProjectsLoading(false);
+      }
+    };
+    // Fetch gallery / saved storyboards
+    const fetchGallery = async () => {
+      setGalleryLoading(true);
+      try {
+        const stories = await listGalleryApi();
+        setSavedStories(stories);
+        const loadId = searchParams.get('load');
+        if (loadId) {
+          loadStoryById(loadId, stories);
+          setSearchParams({}, { replace: true });
+        }
+      } catch (err) {
+        console.error('Load gallery failed', err);
+      } finally {
+        setGalleryLoading(false);
+      }
+    };
+    fetchProjects();
+    fetchGallery();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ─── Project handlers ───
+  const handleQuickCreate = async () => {
+    setCreatingProject(true);
+    try {
+      const project = await v2Api.createProject({
+        title: 'Untitled Project',
+        description: '',
+        style: '',
+      });
+      navigate(`/project/${project.id}`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCreatingProject(false);
+    }
+  };
+
+  const handleCreateWithDetails = async () => {
+    if (!newTitle.trim()) return;
+    setCreatingProject(true);
+    try {
+      const project = await v2Api.createProject({
+        title: newTitle.trim(),
+        description: newDescription.trim(),
+        style: '',
+      });
+      setShowNewModal(false);
+      setNewTitle('');
+      setNewDescription('');
+      navigate(`/project/${project.id}`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCreatingProject(false);
+    }
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    try {
+      await v2Api.deleteProject(projectId);
+      setProjects((prev) => prev.filter((p) => p.id !== projectId));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // ─── Storyboard handlers ───
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setStoryboard(null);
+    setVideos([]);
+    setCurrentStoryId(null);
+    try {
+      const styleText = resolveStyleText();
+      const generatedStoryboard = await generateStoryboardApi(sentence, shotCount, styleText);
+      setStoryboard(generatedStoryboard);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateVideo = async () => {
+    if (!storyboard) return;
+    setVideoLoading(true);
+    setError(null);
+    try {
+      const url = await generateVideoApi(storyboard);
+      const newVideo = { url, createdAt: new Date().toISOString() };
+      const updatedVideos = [...videos, newVideo];
+      setVideos(updatedVideos);
+      if (currentStoryId) {
+        const existingStory = savedStories.find((s) => s.id === currentStoryId);
+        if (existingStory) {
+          const updatedStory = { ...existingStory, storyboard, videos: updatedVideos };
+          saveGalleryApi(updatedStory)
+            .then((saved) => { setSavedStories((prev) => prev.map((s) => (s.id === saved.id ? saved : s))); })
+            .catch((err) => console.error('Auto-save video failed:', err));
+        }
+      } else {
+        const newStory = {
+          title: sentence, createdAt: new Date().toISOString(),
+          shotCount: storyboard.length, storyboard, style: resolveStyleText(), videos: updatedVideos,
+        };
+        saveGalleryApi(newStory)
+          .then((saved) => { setSavedStories((prev) => [...prev, saved]); setCurrentStoryId(saved.id); })
+          .catch((err) => console.error('Auto-save story with video failed:', err));
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setVideoLoading(false);
+    }
+  };
+
+  const isPlaceholderImage = (url) => !url || url.includes('placehold.co');
+
+  const handleRegenerateShotImage = async (index) => {
+    if (!storyboard || index < 0 || index >= storyboard.length) return;
+    setRegeneratingIndex(index);
+    setError(null);
+    try {
+      const shot = storyboard[index];
+      const styleText = resolveStyleText();
+      let referenceImageBase64 = null;
+      if (index > 0 && storyboard[0]?.imageUrl?.startsWith('data:')) {
+        referenceImageBase64 = storyboard[0].imageUrl.split(',')[1];
+      }
+      const heroSubject = storyboard[0]?.heroSubject || '';
+      const previousStyleHint = index > 0 ? storyboard[index - 1]?.prompt || '' : '';
+      const newImageUrl = await regenerateShotImageApi(shot, styleText, referenceImageBase64, heroSubject, previousStyleHint);
+      const updatedStoryboard = [...storyboard];
+      updatedStoryboard[index] = { ...updatedStoryboard[index], imageUrl: newImageUrl };
+      setStoryboard(updatedStoryboard);
+      const existingStory = savedStories.find((s) => s.title === sentence);
+      if (existingStory) {
+        const updatedStory = { ...existingStory, storyboard: updatedStoryboard };
+        saveGalleryApi(updatedStory)
+          .then((saved) => { setSavedStories((prev) => prev.map((s) => (s.id === saved.id ? saved : s))); })
+          .catch((err) => console.error('Auto-save failed:', err));
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRegeneratingIndex(null);
+    }
+  };
+
+  const handleSaveStory = () => {
+    if (!storyboard || !sentence) return;
+    const story = {
+      id: currentStoryId || undefined, title: sentence, createdAt: new Date().toISOString(),
+      shotCount: storyboard.length, storyboard, style: resolveStyleText(), videos,
+    };
+    saveGalleryApi(story)
+      .then((saved) => { setSavedStories((prev) => [...prev.filter((s) => s.id !== saved.id), saved]); setCurrentStoryId(saved.id); })
+      .catch((err) => setError(err.message));
+  };
+
+  const handleLoadStory = (id) => {
+    const story = savedStories.find((s) => s.id === id);
+    if (!story) return;
+    setSentence(story.title);
+    setStoryboard(story.storyboard);
+    setShotCount(story.shotCount || story.storyboard.length || 6);
+    if (story.style) { setStyleOption('custom'); setCustomStyle(story.style); }
+    setVideos(story.videos || []);
+    setCurrentStoryId(story.id);
+    setViewStory(null);
+    setActiveTab('storyboard');
+  };
+
+  const handleDeleteStory = (id) => {
+    deleteGalleryApi(id)
+      .then((stories) => setSavedStories(stories))
+      .catch((err) => setError(err.message));
+  };
+
+  const handleDownloadImage = (imageUrl, filename) => {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = filename || 'shot.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // ─── Render storyboard shots ───
+  const renderShots = () => {
+    if (loading) {
+      return (
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+          {Array.from({ length: shotCount || 6 }).map((_, idx) => (
+            <Card key={idx} className="shot-card" padding="lg" radius="lg" shadow="lg" withBorder>
+              <Skeleton height={18} width="60%" radius="sm" mb="sm" />
+              <Skeleton height={16} width="30%" radius="sm" mb="md" />
+              <Skeleton height={220} radius="md" mb="md" />
+              <Skeleton height={14} radius="sm" mb={8} />
+              <Skeleton height={14} radius="sm" width="80%" />
+            </Card>
+          ))}
+        </SimpleGrid>
+      );
+    }
+    if (!storyboard) return null;
+    return (
+      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+        {storyboard.map((shot, index) => {
+          const isFailed = isPlaceholderImage(shot.imageUrl);
+          const isRegenerating = regeneratingIndex === index;
+          return (
+            <Card key={`shot-${index}`} className="shot-card" padding="lg" radius="lg" shadow="xl" withBorder>
+              <div
+                className={`shot-image-wrapper ${isFailed ? 'shot-image-failed' : ''}`}
+                onClick={isFailed && !isRegenerating ? () => handleRegenerateShotImage(index) : (!isFailed && !isRegenerating ? () => setPreviewImage({ url: shot.imageUrl, name: `shot_${index + 1}.png` }) : undefined)}
+                style={{ cursor: isFailed || !isRegenerating ? 'pointer' : undefined }}
+                title={isFailed ? 'Click to regenerate' : 'Click to enlarge'}
+              >
+                {isRegenerating ? (
+                  <Skeleton height={220} radius="md" />
+                ) : (
+                  <Image src={shot.imageUrl} alt={`Shot ${shot.shot}`} height={220} radius="md" withPlaceholder className="shot-image" />
+                )}
+                {isFailed && !isRegenerating && (
+                  <div className="shot-retry-overlay">
+                    <Text size="sm" c="white">Click to regenerate</Text>
+                  </div>
+                )}
+              </div>
+              <Title order={4} className="shot-title" mb="sm">{shot.description}</Title>
+              <Text size="md" className="shot-prompt">{shot.shotStory || shot.prompt}</Text>
+            </Card>
+          );
+        })}
+        {videos.map((video, idx) => (
+          <Card key={`video-${idx}`} className="shot-card video-shot-card" padding="lg" radius="lg" shadow="xl" withBorder>
+            <div className="shot-image-wrapper video-wrapper">
+              <video src={video.url} className="video-thumbnail" muted loop playsInline
+                onMouseEnter={(e) => e.target.play()}
+                onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+              />
+              <div className="video-overlay">
+                <ActionIcon variant="filled" color="#5922C7" size="xl" radius="xl" onClick={() => setFullscreenVideo(video.url)}>
+                  <span style={{ fontSize: 20 }}>&#9654;</span>
+                </ActionIcon>
+              </div>
+            </div>
+            <Title order={4} className="shot-title" mb="sm">Generated Video #{idx + 1}</Title>
+          </Card>
+        ))}
+        {videoLoading && (
+          <Card className="shot-card" padding="lg" radius="lg" shadow="lg" withBorder>
+            <Skeleton height={220} radius="md" mb="md" />
+            <Skeleton height={18} width="60%" radius="sm" mb="sm" />
+            <Skeleton height={14} radius="sm" width="40%" />
+          </Card>
+        )}
+      </SimpleGrid>
+    );
+  };
+
+  return (
+    <>
+      {/* Page Header */}
+      <Group justify="space-between" align="center" mb="lg">
+        <div>
+          <Title order={2} className="section-title" mb={4}>Studio</Title>
+          <Text size="sm" c="dimmed">
+            Your creative workspace — screenplay projects, AI storyboard generation, and saved creations
+          </Text>
+        </div>
+        <Group gap="sm">
+          <Badge size="lg" color="grape" variant="light">Creative Hub</Badge>
+        </Group>
+      </Group>
+
+      {error && <Alert color="red" variant="light" mb="md" withCloseButton onClose={() => setError(null)}>{error}</Alert>}
+
+      {/* ─── Tabs ─── */}
+      <Tabs value={activeTab} onChange={setActiveTab} variant="pills" radius="xl" mb="xl">
+        <Tabs.List mb="lg">
+          <Tabs.Tab value="projects" leftSection={<span>&#127916;</span>}>
+            Projects
+            {projects.length > 0 && <Badge size="xs" variant="filled" color="grape" ml={6}>{projects.length}</Badge>}
+          </Tabs.Tab>
+          <Tabs.Tab value="storyboard" leftSection={<span>&#127912;</span>}>
+            Storyboard Generator
+          </Tabs.Tab>
+          <Tabs.Tab value="saved" leftSection={<span>&#128444;</span>}>
+            Saved Storyboards
+            {savedStories.length > 0 && <Badge size="xs" variant="filled" color="teal" ml={6}>{savedStories.length}</Badge>}
+          </Tabs.Tab>
+        </Tabs.List>
+
+        {/* ════════════ PROJECTS TAB ════════════ */}
+        <Tabs.Panel value="projects">
+          <Group justify="flex-end" mb="md" gap="sm">
+            <Button variant="light" color="grape" size="sm" onClick={() => setShowNewModal(true)}>
+              New with Details
+            </Button>
+            <Button
+              variant="gradient" gradient={{ from: '#5922C7', to: '#7C3AED' }}
+              size="md" onClick={handleQuickCreate} loading={creatingProject}
+            >
+              + Quick Create
+            </Button>
+          </Group>
+
+          {projectsLoading ? (
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i} padding="lg" radius="lg" withBorder>
+                  <Skeleton height={18} width="60%" mb="sm" />
+                  <Skeleton height={14} width="40%" mb="xs" />
+                  <Skeleton height={14} width="80%" />
+                </Card>
+              ))}
+            </SimpleGrid>
+          ) : projects.length === 0 ? (
+            <Card className="glass-panel" withBorder padding="xl" radius="xl" shadow="xl">
+              <Stack align="center" gap="md" py="xl">
+                <div style={{ fontSize: 56, lineHeight: 1 }}>&#128196;</div>
+                <Title order={3} ta="center">No projects yet</Title>
+                <Text c="dimmed" ta="center" maw={420}>
+                  Create your first project to get started. Upload a screenplay, break it into scenes and shots, then generate storyboard images and videos.
+                </Text>
+                <Button variant="gradient" gradient={{ from: '#5922C7', to: '#7C3AED' }} size="md"
+                  onClick={handleQuickCreate} loading={creatingProject}
+                >
+                  + Create First Project
+                </Button>
+              </Stack>
+            </Card>
+          ) : (
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+              <Card className="glass-panel quick-action-card" withBorder padding="lg" radius="xl" shadow="md"
+                style={{ cursor: 'pointer', borderStyle: 'dashed' }} onClick={() => setShowNewModal(true)}
+              >
+                <Stack gap="sm" align="center" justify="center" ta="center" style={{ minHeight: 140 }}>
+                  <div style={{ fontSize: 32, opacity: 0.6 }}>+</div>
+                  <Text size="sm" c="dimmed" fw={500}>Create New Project</Text>
+                </Stack>
+              </Card>
+              {projects.map((project) => (
+                <Card key={project.id} className="studio-project-card" padding="lg" radius="lg" withBorder shadow="sm"
+                  style={{ cursor: 'pointer' }} onClick={() => navigate(`/project/${project.id}`)}
+                >
+                  <Stack gap="xs">
+                    <Group justify="space-between" align="flex-start">
+                      <Title order={4} lineClamp={1} style={{ flex: 1 }}>{project.title}</Title>
+                      <Badge color={project.status === 'draft' ? 'gray' : project.status === 'active' ? 'violet' : 'green'}
+                        size="sm" variant="light">{project.status}</Badge>
+                    </Group>
+                    {project.description && <Text size="sm" c="dimmed" lineClamp={2}>{project.description}</Text>}
+                    <Group gap="lg" mt={4}>
+                      <Group gap={4}>
+                        <Text size="xs" c="dimmed">Scenes:</Text>
+                        <Badge size="sm" variant="light" color="blue">{project.sceneCount || 0}</Badge>
+                      </Group>
+                      <Group gap={4}>
+                        <Text size="xs" c="dimmed">Shots:</Text>
+                        <Badge size="sm" variant="light" color="cyan">{project.shotCount || 0}</Badge>
+                      </Group>
+                    </Group>
+                    <Text size="xs" c="dimmed" mt={4}>Updated {new Date(project.updatedAt).toLocaleString()}</Text>
+                    <div className="gallery-links" onClick={(e) => e.stopPropagation()}>
+                      <button className="link-btn" onClick={() => navigate(`/project/${project.id}`)}>Open</button>
+                      <span className="link-sep">·</span>
+                      <button className="link-btn" onClick={() => navigate(`/project/${project.id}/video`)}>Video Lab</button>
+                      <span className="link-sep">·</span>
+                      <button className="link-btn" style={{ color: '#e03131' }} onClick={() => handleDeleteProject(project.id)}>Delete</button>
+                    </div>
+                  </Stack>
+                </Card>
+              ))}
+            </SimpleGrid>
+          )}
+        </Tabs.Panel>
+
+        {/* ════════════ STORYBOARD GENERATOR TAB ════════════ */}
+        <Tabs.Panel value="storyboard">
+          <Card className="glass-panel" withBorder padding="lg" radius="xl" shadow="xl">
+            <form onSubmit={handleSubmit}>
+              <Stack gap={8}>
+                <Stack gap={4}>
+                  <Text className="form-label">Story Description</Text>
+                  <Textarea value={sentence} onChange={(e) => setSentence(e.target.value)}
+                    placeholder="Enter a story prompt, e.g.: In a rainy neon city, a cat searches for lost memories."
+                    minRows={1} maxRows={4} required autosize
+                  />
+                </Stack>
+                <Stack gap={4}>
+                  <Text className="form-label">Style</Text>
+                  <Group align="center" gap="md" wrap="wrap">
+                    <Select data={stylePresets.map((s) => ({ value: s.value, label: s.label }))}
+                      value={styleOption} onChange={(val) => setStyleOption(val || 'cyberpunk')}
+                      placeholder="Choose style" maw={240} className="style-select"
+                    />
+                    {styleOption === 'custom' ? (
+                      <TextInput placeholder="Custom style description" value={customStyle}
+                        onChange={(e) => setCustomStyle(e.target.value)} maw={360}
+                      />
+                    ) : (
+                      <Text size="sm" c="dimmed" maw={360}>
+                        {stylePresets.find((s) => s.value === styleOption)?.text}
+                      </Text>
+                    )}
+                  </Group>
+                </Stack>
+                <Group align="center" justify="space-between" wrap="wrap" gap="md">
+                  <div className="slider-block">
+                    <Text size="sm" mb={6} className="form-label">Shots: {shotCount}</Text>
+                    <Slider min={2} max={12} step={1} value={shotCount} onChange={setShotCount}
+                      marks={[{ value: 3, label: '3' }, { value: 6, label: '6' }, { value: 9, label: '9' }, { value: 12, label: '12' }]}
+                    />
+                  </div>
+                  <NumberInput label="Exact" min={2} max={12} value={shotCount}
+                    onChange={(val) => setShotCount(Number(val) || 6)} maw={140}
+                  />
+                  <Button type="submit" size="md" variant="gradient" gradient={{ from: '#5922C7', to: '#7C3AED' }} loading={loading}>
+                    {loading ? 'Generating...' : 'Generate Storyboard'}
+                  </Button>
+                </Group>
+              </Stack>
+            </form>
+          </Card>
+
+          {/* Current Storyboard Result */}
+          {(storyboard || loading) && (
+            <div className="section">
+              <Group justify="space-between" align="center" mb="md">
+                <Title order={2} className="section-title">Current Storyboard</Title>
+                <Group gap="sm">
+                  <Button variant="subtle" color="gray" onClick={handleSaveStory} disabled={!storyboard}>Save to Gallery</Button>
+                  <Button variant="outline" color="grape" onClick={handleGenerateVideo} loading={videoLoading} disabled={!storyboard}>
+                    {videoLoading ? 'Generating video...' : 'Generate Video from Storyboard'}
+                  </Button>
+                </Group>
+              </Group>
+              {renderShots()}
+            </div>
+          )}
+        </Tabs.Panel>
+
+        {/* ════════════ SAVED STORYBOARDS TAB ════════════ */}
+        <Tabs.Panel value="saved">
+          {galleryLoading ? (
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i} padding="lg" radius="lg" withBorder>
+                  <Skeleton height={180} radius="md" mb="md" />
+                  <Skeleton height={18} width="60%" mb="sm" />
+                  <Skeleton height={14} width="40%" />
+                </Card>
+              ))}
+            </SimpleGrid>
+          ) : savedStories.length === 0 ? (
+            <Card className="glass-panel" withBorder padding="xl" radius="xl" shadow="xl">
+              <Stack align="center" gap="md" py="xl">
+                <div style={{ fontSize: 48, lineHeight: 1 }}>&#128444;</div>
+                <Title order={3} ta="center">No saved storyboards yet</Title>
+                <Text c="dimmed" ta="center" maw={400}>
+                  Generate a storyboard in the Storyboard Generator tab, then save it to see it here.
+                </Text>
+                <Button variant="light" color="grape" onClick={() => setActiveTab('storyboard')}>
+                  Go to Storyboard Generator
+                </Button>
+              </Stack>
+            </Card>
+          ) : (
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+              {savedStories.map((story) => (
+                <Card key={story.id} className="gallery-card" padding="lg" radius="lg" withBorder shadow="lg">
+                  <Image src={story.storyboard?.[0]?.imageUrl} alt={story.title} height={180} radius="md" withPlaceholder className="gallery-image" />
+                  <Title order={4} className="gallery-title">{story.title}</Title>
+                  <Text size="sm" c="dimmed">
+                    {new Date(story.createdAt).toLocaleString()} · {story.shotCount || story.storyboard.length} shots
+                  </Text>
+                  <div className="gallery-links">
+                    <button className="link-btn" onClick={() => setViewStory(story)}>View</button>
+                    <span className="link-sep">·</span>
+                    <button className="link-btn" onClick={() => handleLoadStory(story.id)}>Load</button>
+                    <span className="link-sep">·</span>
+                    <button className="link-btn" onClick={() => handleDeleteStory(story.id)}>Delete</button>
+                  </div>
+                </Card>
+              ))}
+            </SimpleGrid>
+          )}
+        </Tabs.Panel>
+      </Tabs>
+
+      {/* ─── Modals ─── */}
+      {/* New Project Modal */}
+      <Modal opened={showNewModal} onClose={() => setShowNewModal(false)} title="Create New Project" radius="lg" centered>
+        <Stack gap="md">
+          <TextInput label="Project Title" placeholder="e.g., My Short Film" value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)} required />
+          <Textarea label="Description (optional)" placeholder="Brief description of the project..."
+            value={newDescription} onChange={(e) => setNewDescription(e.target.value)} minRows={2} maxRows={4} autosize />
+          <Group justify="flex-end" gap="sm">
+            <Button variant="subtle" color="gray" onClick={() => setShowNewModal(false)}>Cancel</Button>
+            <Button variant="gradient" gradient={{ from: '#5922C7', to: '#7C3AED' }}
+              onClick={handleCreateWithDetails} loading={creatingProject} disabled={!newTitle.trim()}>
+              Create Project
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* View Story Modal */}
+      <Modal opened={!!viewStory} onClose={() => setViewStory(null)} title={viewStory?.title} size="xl" radius="lg" centered>
+        {viewStory && (
+          <Stack gap="md">
+            <Text size="sm" c="dimmed">
+              {new Date(viewStory.createdAt).toLocaleString()} · {viewStory.shotCount || viewStory.storyboard.length} shots
+            </Text>
+            <ScrollArea h={520} type="always" scrollHideDelay={0}>
+              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                {viewStory.storyboard.map((shot, idx) => (
+                  <Card key={idx} withBorder radius="md" padding="md" className="viewer-card">
+                    <Image src={shot.imageUrl} alt={`Shot ${shot.shot}`} height={180} radius="md" withPlaceholder mb="sm" />
+                    <Title order={5} className="shot-title">{shot.description}</Title>
+                    <Text size="sm" className="shot-prompt">{shot.shotStory || shot.prompt}</Text>
+                  </Card>
+                ))}
+              </SimpleGrid>
+            </ScrollArea>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* Video Fullscreen Modal */}
+      <Modal opened={!!fullscreenVideo} onClose={() => setFullscreenVideo(null)} size="xl" radius="lg" centered padding={0} withCloseButton classNames={{ body: 'video-modal-body' }}>
+        {fullscreenVideo && <video src={fullscreenVideo} controls autoPlay style={{ width: '100%', borderRadius: 8 }} />}
+      </Modal>
+
+      {/* Image Preview Modal */}
+      <Modal opened={!!previewImage} onClose={() => setPreviewImage(null)} size="xl" radius="lg" centered padding="md" withCloseButton classNames={{ body: 'preview-image-modal' }}>
+        {previewImage && (
+          <div style={{ position: 'relative' }}>
+            <ActionIcon variant="transparent" color="gray" size="lg" radius="md"
+              style={{ position: 'absolute', top: 8, right: 8, zIndex: 10 }}
+              onClick={() => handleDownloadImage(previewImage.url, previewImage.name)}
+              title="Download image"
+            >
+              <span style={{ fontSize: 16 }}>&#11015;</span>
+            </ActionIcon>
+            <Image src={previewImage.url} alt="Preview" radius="md" fit="cover" style={{ maxHeight: '80vh', width: '100%' }} />
+          </div>
+        )}
+      </Modal>
+    </>
+  );
+}

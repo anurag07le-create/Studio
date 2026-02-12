@@ -13,7 +13,7 @@ const FALLBACK_STORYBOARD = [
     prompt: "Extreme macro close-up of a small, dormant seed nestled in dark, moist, granular soil. The camera slowly zooms in, focusing on subtle tremors as the seed casing cracks. A tiny, pale green sprout, delicate and hopeful, slowly pushes through the cracked seed and then through the soil surface. The movement is a smooth, time-lapse-like emergence. Ends with the very tip of the sprout just breaking the soil line, surrounded by richly detailed soil. Cinematic, macro photography, hyperrealistic, 4K, soft, diffused natural light, shallow depth of field, seamless emergence, no text, no captions.",
     duration: "5-6 seconds",
     description: "The Awakening: A seed cracks and a sprout emerges from the soil.",
-    shotStory: "在黑暗潮湿的泥土中，一颗沉睡的种子开始苏醒。种壳轻轻裂开，一株嫩绿的幼芽缓缓破土而出，带着对生命的渴望。",
+    shotStory: "In the dark, moist soil, a dormant seed begins to awaken. The shell gently cracks open, and a tender green sprout slowly pushes through, yearning for life.",
     imageUrl: "http://localhost:5180/images/shot1.jpg"
   },
   {
@@ -21,7 +21,7 @@ const FALLBACK_STORYBOARD = [
     prompt: "Low angle shot. Gentle rain begins to fall. The tiny sprout grows rapidly in a time-lapse style. It unfurls leaves, stretching upwards. The stem thickens and turns woody, transforming from a fragile sprout into a sturdy young sapling. The rain nourishes it, and the soil stays dark and rich. Photorealistic, Time-lapse, 4K.",
     duration: "6-7 seconds",
     description: "The Growth: Rain falls, and the sprout grows into a sapling.",
-    shotStory: "紧接着，天空飘起细雨。雨水滋润着刚破土的幼芽，它迅速舒展叶片，茎干逐渐变粗变硬，从脆弱的小苗成长为一株健壮的树苗。",
+    shotStory: "Then, a gentle rain begins to fall from the sky. The rainwater nourishes the newly emerged sprout as it rapidly unfurls its leaves, its stem thickening and hardening, growing from a fragile seedling into a sturdy sapling.",
     imageUrl: "http://localhost:5180/images/shot2.jpg"
   },
   {
@@ -29,7 +29,7 @@ const FALLBACK_STORYBOARD = [
     prompt: "Wide shot. The rain stops, sun breaks through. The sapling accelerates into a mighty, ancient oak tree. Branches reach out, leaves explode in lush green canopies. The trunk expands, bark becoming rough. Sunbeams filter through leaves, creating dappled light. Birds fly into the branches. Cinematic, Majestic, Hyperrealistic.",
     duration: "7-8 seconds",
     description: "The Mighty Tree: The sapling becomes a massive, ancient oak.",
-    shotStory: "雨过天晴，阳光穿透云层。树苗在光芒中加速生长，枝干向四周伸展，树冠郁郁葱葱。它已蜕变成一棵参天古橡树，鸟儿飞入枝头栖息。",
+    shotStory: "The rain clears and sunlight breaks through the clouds. The sapling accelerates its growth in the light, branches reaching out in all directions, the canopy lush and full. It has transformed into a towering ancient oak, with birds flying in to nest among its branches.",
     imageUrl: "http://localhost:5180/images/shot3.jpg"
   },
   {
@@ -37,7 +37,7 @@ const FALLBACK_STORYBOARD = [
     prompt: "Wide landscape view. The mighty tree stands in a vibrant meadow. Roots spread deep. Under its shade, animals graze. A stream flows nearby. Flowers bloom around it. The tree stands as a beacon of life. Cinematic, Detailed Ecosystem, Golden Hour.",
     duration: "6-7 seconds",
     description: "The Source of Life: The tree supports a vibrant ecosystem.",
-    shotStory: "如今，这棵从种子成长而来的大树矗立在生机勃勃的草地上。它的树荫下动物悠闲觅食，溪流在旁潺潺流过，鲜花环绕盛开——它已成为生命的源泉。",
+    shotStory: "Now, this great tree that grew from a seed stands tall in a vibrant meadow. Animals graze leisurely under its shade, a stream flows gently nearby, and flowers bloom all around — it has become a source of life.",
     imageUrl: "http://localhost:5180/images/shot4.jpg"
   }
 ];
@@ -264,16 +264,16 @@ exports.generatePrompts = async (sentence, shotCount = 6, styleOverride) => {
            "Now the viewpoint shifts slightly...").
          - No sudden teleports or unexplained jumps in space or time.
 
-      4. Causal Relationship (因果关系):
+      4. Causal Relationship:
          - Each shot MUST have a clear cause-and-effect relationship with the previous shot.
-         - In the Chinese shotStory, explicitly explain WHY the new shot occurs, using words
-           like "因此"、"于是"、"紧接着"、"随后" 来说明因果和顺承关系。
+         - In the shotStory, explicitly explain WHY the new shot occurs, using words
+           like "therefore", "as a result", "immediately after", "then" to convey causality and continuity.
          - Avoid random scene jumps; every shot should be a logical consequence of the previous one.
 
-      5. Temporal Continuity (时间顺序):
+      5. Temporal Continuity:
          - Maintain strict chronological order from shot 1 to shot ${shotCount}.
          - Unless the user explicitly requests flashbacks, do NOT use time jumps.
-         - Use time markers in shotStory (e.g., "紧接着", "随后", "与此同时", "最终") to
+         - Use time markers in shotStory (e.g., "immediately after", "then", "meanwhile", "finally") to
            emphasize the timeline progression.
 
       Output format: ONLY a raw JSON array (no code fences, no comments, no extra text).
@@ -293,16 +293,16 @@ exports.generatePrompts = async (sentence, shotCount = 6, styleOverride) => {
         * No other values allowed.
 
       - description:
-        * A concise Chinese summary of the on-screen action (1 sentence).
-        * 必须是中文，清楚说明当前镜头画面在做什么、叙事推进了什么。
-        * 不要加入元信息或技术术语，只描述画面。
+        * A concise English summary of the on-screen action (1 sentence).
+        * Clearly describe what the current shot shows and how the narrative progresses.
+        * Do not include meta information or technical terms, only describe the visuals.
 
       - shotStory:
-        * 2-3 sentences in Chinese.
-        * 叙述这一镜头在故事中的角色，强调它与上一镜头的因果和时间顺承关系。
-        * 必须使用连接词（例如 "因此"、"于是"、"紧接着"、"随后"、"与此同时"、"最终"），
-          表达清晰的因果链和时间线推进。
-        * 不要重复上一镜头的全部内容，只在必要程度上回顾，然后推动故事向前发展。
+        * 2-3 sentences in English.
+        * Narrate this shot's role in the story, emphasizing its causal and temporal relationship with the previous shot.
+        * Use connective phrases (e.g., "therefore", "as a result", "immediately after", "then", "meanwhile", "finally")
+          to express a clear causal chain and timeline progression.
+        * Do not repeat the entire content of the previous shot; only briefly reference it as needed, then push the story forward.
 
       - heroSubject:
         * ONLY present in shot 1.

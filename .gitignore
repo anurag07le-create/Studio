@@ -11,6 +11,7 @@ frontend.log
 # Environment
 .env
 backend/.env
+backend/service-account.json
 frontend/.env
 
 # Build outputs

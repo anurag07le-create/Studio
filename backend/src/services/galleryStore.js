@@ -1,25 +1,4 @@
-const path = require('path');
-const Database = require('better-sqlite3');
-const fs = require('fs');
-
-const dataDir = path.join(__dirname, '../../data');
-const dbPath = path.join(dataDir, 'gallery.db');
-
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
-
-const db = new Database(dbPath);
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS stories (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    createdAt TEXT NOT NULL,
-    shotCount INTEGER NOT NULL,
-    storyboard TEXT NOT NULL
-  );
-`);
+const db = require('../db/connection');
 
 // Add style column if it does not exist (idempotent)
 const hasStyleColumn = db

@@ -1,0 +1,47 @@
+{
+  "name": "fountain-js",
+  "version": "1.2.4",
+  "description": "A simple parser for Fountain, a markup language for formatting screenplays.",
+  "main": "dist/index.js",
+  "module": "dist.esm/index.js",
+  "scripts": {
+    "clean": "rimraf dist dist.esm",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -b",
+    "build:esm": "tsc -b ./tsconfig.esm.json",
+    "test": "jasmine --config=jasmine.json"
+  },
+  "keywords": [
+    "Typescript",
+    "Javascript",
+    "Fountain",
+    "markdown",
+    "parser",
+    "screenwriting",
+    "screenplays",
+    "filmmaking"
+  ],
+  "homepage": "https://github.com/jonnygreenwald/fountain-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonnygreenwald/fountain-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonnygreenwald/fountain-js/issues"
+  },
+  "author": "Jonny Greenwald",
+  "contributors": [
+    "Matt Daly",
+    "Jonny Greenwald",
+    "Nathan Hoad",
+    "Chandler Anderson"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jasmine": "^5.1.2",
+    "jasmine": "^5.1.0",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.7.0",
+    "typescript": "^5.2.2"
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import {
   listVideoLogsApi,
   deleteVideoLogApi,
@@ -36,6 +37,8 @@ const statusColors = {
 };
 
 function VideoLogs({ onBack }) {
+  const navigate = useNavigate();
+  const handleBack = onBack || (() => navigate('/'));
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState(null);
@@ -76,7 +79,7 @@ function VideoLogs({ onBack }) {
   };
 
   const handleClearAll = async () => {
-    if (!window.confirm('确定要清空所有日志吗？')) return;
+    if (!window.confirm('Are you sure you want to clear all logs?')) return;
     try {
       if (activeTab === 'video') {
         await clearVideoLogsApi();
@@ -95,9 +98,9 @@ function VideoLogs({ onBack }) {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     if (minutes > 0) {
-      return `${minutes}分${seconds % 60}秒`;
+      return `${minutes}m ${seconds % 60}s`;
     }
-    return `${seconds}秒`;
+    return `${seconds}s`;
   };
 
   const isVideo = activeTab === 'video';
@@ -244,22 +247,22 @@ function VideoLogs({ onBack }) {
     <Container size="xl" py="md">
       <Group justify="space-between" mb="lg" align="flex-start">
         <Stack gap={4}>
-          <Title order={2} className="logs-title">{activeTab === 'video' ? '视频生成日志' : '分镜生成日志'}</Title>
+          <Title order={2} className="logs-title">{activeTab === 'video' ? 'Video Generation Logs' : 'Storyboard Generation Logs'}</Title>
           <Tabs value={activeTab} onChange={setActiveTab} className="logs-tabs">
             <Tabs.List>
-              <Tabs.Tab value="video">视频日志</Tabs.Tab>
-              <Tabs.Tab value="storyboard">分镜日志</Tabs.Tab>
+              <Tabs.Tab value="video">Video Logs</Tabs.Tab>
+              <Tabs.Tab value="storyboard">Storyboard Logs</Tabs.Tab>
             </Tabs.List>
           </Tabs>
         </Stack>
         <Group>
-          <Button variant="subtle" onClick={onBack} className="logs-action">返回主页</Button>
-          <Button variant="light" onClick={fetchLogs} className="logs-action">刷新</Button>
-          <Button variant="light" color="teal" onClick={exportAllLogs} disabled={logs.length === 0} className="logs-action">
-            导出全部
+          <Button variant="subtle" onClick={handleBack} className="logs-action">Back to Home</Button>
+          <Button variant="light" onClick={fetchLogs} className="logs-action">Refresh</Button>
+          <Button variant="light" color="grape" onClick={exportAllLogs} disabled={logs.length === 0} className="logs-action">
+            Export All
           </Button>
           <Button variant="light" color="red" onClick={handleClearAll} disabled={logs.length === 0} className="logs-action">
-            清空日志
+            Clear Logs
           </Button>
         </Group>
       </Group>
@@ -276,7 +279,7 @@ function VideoLogs({ onBack }) {
         </Group>
       ) : logs.length === 0 ? (
         <Card withBorder padding="xl" radius="md">
-          <Text ta="center" c="dimmed" className="logs-empty-text">暂无日志记录</Text>
+          <Text ta="center" c="dimmed" className="logs-empty-text">No logs yet</Text>
         </Card>
       ) : (
         <Stack gap="md">
@@ -294,28 +297,28 @@ function VideoLogs({ onBack }) {
                     {new Date(log.createdAt).toLocaleString()}
                   </Text>
                   <Text size="sm" c="dimmed">
-                    耗时: {formatDuration(log.duration)}
+                    Duration: {formatDuration(log.duration)}
                   </Text>
                 </Group>
               </Group>
 
               <Group mb="sm">
-                <Text size="sm">分镜数: {log.storyboard?.length || 0}</Text>
+                <Text size="sm">Shots: {log.storyboard?.length || 0}</Text>
                 {isVideo ? (
-                  <Text size="sm">过渡片段: {log.transitionPlans?.length || 0}</Text>
+                  <Text size="sm">Transitions: {log.transitionPlans?.length || 0}</Text>
                 ) : (
-                  <Text size="sm">请求镜头: {log.requestedShots || '-'}</Text>
+                  <Text size="sm">Requested shots: {log.requestedShots || '-'}</Text>
                 )}
                 {isVideo && log.finalVideoUrl && (
                   <a href={log.finalVideoUrl} target="_blank" rel="noopener noreferrer">
-                    <Badge color="teal">查看视频</Badge>
+                    <Badge color="grape">View Video</Badge>
                   </a>
                 )}
               </Group>
 
               {!isVideo && log.sentence && (
                 <Text size="sm" c="dimmed" lineClamp={2}>
-                  故事：{log.sentence}
+                  Story: {log.sentence}
                 </Text>
               )}
 
@@ -327,13 +330,13 @@ function VideoLogs({ onBack }) {
 
               <Group>
                 <Button size="xs" variant="light" onClick={() => setSelectedLog(log)}>
-                  查看详情
+                  View Details
                 </Button>
-                <Button size="xs" variant="light" color="teal" onClick={() => exportLog(log)}>
-                  导出
+                <Button size="xs" variant="light" color="grape" onClick={() => exportLog(log)}>
+                  Export
                 </Button>
                 <Button size="xs" variant="light" color="red" onClick={() => handleDelete(log.id)}>
-                  删除
+                  Delete
                 </Button>
               </Group>
             </Card>
@@ -344,7 +347,7 @@ function VideoLogs({ onBack }) {
       <Modal
         opened={!!selectedLog}
         onClose={() => setSelectedLog(null)}
-        title={`日志详情 - ${selectedLog?.id}`}
+        title={`Log Details - ${selectedLog?.id}`}
         size="xl"
         radius="lg"
       >
@@ -357,33 +360,33 @@ function VideoLogs({ onBack }) {
                     {selectedLog.status}
                   </Badge>
                   <Text size="sm">{new Date(selectedLog.createdAt).toLocaleString()}</Text>
-                  <Text size="sm">耗时: {formatDuration(selectedLog.duration)}</Text>
+                  <Text size="sm">Duration: {formatDuration(selectedLog.duration)}</Text>
                 </Group>
-                <Button size="xs" variant="light" color="teal" onClick={() => exportLog(selectedLog)}>
-                  导出此日志
+                <Button size="xs" variant="light" color="grape" onClick={() => exportLog(selectedLog)}>
+                  Export Log
                 </Button>
               </Group>
 
               {selectedLog.errorMessage && (
                 <Alert color="red" variant="light">
-                  <Text fw={500}>错误信息:</Text>
+                  <Text fw={500}>Error:</Text>
                   {selectedLog.errorMessage}
                 </Alert>
               )}
 
               {!isVideo && (
                 <Card padding="sm">
-                  <Text fw={500} mb="xs">分镜任务信息</Text>
-                  {selectedLog.sentence && <Text size="sm">故事：{selectedLog.sentence}</Text>}
-                  {selectedLog.style && <Text size="sm">风格：{selectedLog.style}</Text>}
-                  <Text size="sm">请求镜头：{selectedLog.requestedShots || '-'}</Text>
-                  <Text size="sm">实际生成：{selectedLog.generatedShots || selectedLog.storyboard?.length || 0}</Text>
+                  <Text fw={500} mb="xs">Storyboard Task Info</Text>
+                  {selectedLog.sentence && <Text size="sm">Story: {selectedLog.sentence}</Text>}
+                  {selectedLog.style && <Text size="sm">Style: {selectedLog.style}</Text>}
+                  <Text size="sm">Requested shots: {selectedLog.requestedShots || '-'}</Text>
+                  <Text size="sm">Actually generated: {selectedLog.generatedShots || selectedLog.storyboard?.length || 0}</Text>
                 </Card>
               )}
 
               {isVideo && selectedLog.finalVideoUrl && (
                 <Card padding="sm">
-                  <Text fw={500} mb="xs">生成的视频:</Text>
+                  <Text fw={500} mb="xs">Generated Video:</Text>
                   <video controls width="100%" src={selectedLog.finalVideoUrl} style={{ maxHeight: 300 }} />
                 </Card>
               )}
@@ -391,7 +394,7 @@ function VideoLogs({ onBack }) {
               <Accordion variant="separated">
                 <Accordion.Item value="storyboard">
                   <Accordion.Control>
-                    <Text fw={500}>输入分镜 ({selectedLog.storyboard?.length || 0} 张)</Text>
+                    <Text fw={500}>Input Storyboard ({selectedLog.storyboard?.length || 0} shots)</Text>
                   </Accordion.Control>
                   <Accordion.Panel>
                     <Stack gap="sm">
@@ -426,18 +429,18 @@ function VideoLogs({ onBack }) {
                 {isVideo && (
                   <Accordion.Item value="transitions">
                     <Accordion.Control>
-                      <Text fw={500}>过渡计划 ({selectedLog.transitionPlans?.length || 0} 个)</Text>
+                      <Text fw={500}>Transition Plans ({selectedLog.transitionPlans?.length || 0})</Text>
                     </Accordion.Control>
                     <Accordion.Panel>
                       <Stack gap="sm">
                         {selectedLog.transitionPlans?.map((plan, idx) => (
                           <Card key={idx} padding="sm">
                             <Group mb="xs">
-                              <Badge>过渡 {plan.index + 1}</Badge>
+                              <Badge>Transition {plan.index + 1}</Badge>
                               <Text size="sm">
                                 Shot {plan.shotA?.shot} → Shot {plan.shotB?.shot}
                               </Text>
-                              <Badge color="orange">{plan.duration}秒</Badge>
+                              <Badge color="orange">{plan.duration}s</Badge>
                             </Group>
                             <Text size="sm" fw={500}>Prompt:</Text>
                             <Code block style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>
@@ -453,22 +456,22 @@ function VideoLogs({ onBack }) {
                 {isVideo && (
                   <Accordion.Item value="clips">
                     <Accordion.Control>
-                      <Text fw={500}>生成的片段 ({selectedLog.clipResults?.length || 0} 个)</Text>
+                      <Text fw={500}>Generated Clips ({selectedLog.clipResults?.length || 0})</Text>
                     </Accordion.Control>
                     <Accordion.Panel>
                       <Table>
                         <Table.Thead>
                           <Table.Tr>
-                            <Table.Th>索引</Table.Th>
-                            <Table.Th>时长</Table.Th>
-                            <Table.Th>视频路径</Table.Th>
+                            <Table.Th>Index</Table.Th>
+                            <Table.Th>Duration</Table.Th>
+                            <Table.Th>Video Path</Table.Th>
                           </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
                           {selectedLog.clipResults?.map((clip, idx) => (
                             <Table.Tr key={idx}>
                               <Table.Td>{clip.index}</Table.Td>
-                              <Table.Td>{clip.duration}秒</Table.Td>
+                              <Table.Td>{clip.duration}s</Table.Td>
                               <Table.Td>
                                 <Code style={{ fontSize: 11 }}>{clip.videoPath}</Code>
                               </Table.Td>

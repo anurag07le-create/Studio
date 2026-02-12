@@ -1,31 +1,4 @@
-const path = require('path');
-const Database = require('better-sqlite3');
-const fs = require('fs');
-
-const dataDir = path.join(__dirname, '../../data');
-const dbPath = path.join(dataDir, 'gallery.db');
-
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
-
-const db = new Database(dbPath);
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS storyboard_logs (
-    id TEXT PRIMARY KEY,
-    createdAt TEXT NOT NULL,
-    status TEXT NOT NULL,
-    sentence TEXT,
-    style TEXT,
-    requestedShots INTEGER,
-    generatedShots INTEGER,
-    model TEXT,
-    storyboard TEXT,
-    errorMessage TEXT,
-    duration INTEGER
-  );
-`);
+const db = require('../db/connection');
 
 const generateId = () => `story_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 

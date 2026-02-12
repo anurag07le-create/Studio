@@ -69,22 +69,22 @@ function App() {
   };
 
   const stylePresets = [
-    { value: 'cyberpunk', label: '赛博朋克/霓虹', text: 'Cinematic neon-noir, teal-magenta palette, volumetric rain and fog, soft bloom, anamorphic lens, shallow depth of field, film grain' },
-    { value: 'filmic', label: '电影写实', text: 'Filmic realism, natural lighting, soft bokeh, 35mm lens, muted colors, subtle grain' },
-    { value: 'watercolor', label: '水彩画', text: 'Watercolor illustration, soft edges, pastel palette, paper texture, gentle gradients' },
-    { value: 'anime', label: '动漫风', text: 'Anime cinematic style, vibrant colors, clean lines, dramatic lighting, expressive characters' },
-    { value: 'noir', label: '黑白胶片', text: 'Black and white film noir, high contrast, strong shadows, rim lighting, grainy texture' },
-    { value: 'ghibli', label: '吉卜力风', text: 'Studio Ghibli style, hand-painted backgrounds, soft lighting, whimsical atmosphere, lush nature, dreamy clouds' },
-    { value: 'oilpainting', label: '油画风', text: 'Classical oil painting style, rich textures, dramatic chiaroscuro lighting, Renaissance composition, visible brushstrokes' },
-    { value: 'pixar', label: '皮克斯3D', text: 'Pixar 3D animation style, vibrant saturated colors, soft global illumination, expressive characters, detailed textures' },
-    { value: 'inkwash', label: '水墨国风', text: 'Chinese ink wash painting, minimalist composition, flowing brushstrokes, misty mountains, traditional aesthetics, monochrome with subtle color accents' },
-    { value: 'scifi', label: '科幻未来', text: 'Futuristic sci-fi, sleek metallic surfaces, holographic displays, blue and orange color scheme, epic scale, lens flares' },
-    { value: 'fantasy', label: '奇幻魔法', text: 'Epic fantasy style, magical glowing elements, dramatic lighting, mythical creatures, rich jewel tones, cinematic composition' },
-    { value: 'retro', label: '复古怀旧', text: 'Vintage retro aesthetic, warm sepia tones, film grain, light leaks, 1970s color palette, nostalgic mood' },
-    { value: 'comic', label: '美漫风', text: 'American comic book style, bold outlines, halftone dots, dynamic action poses, vibrant primary colors, dramatic shadows' },
-    { value: 'minimalist', label: '极简主义', text: 'Minimalist design, clean geometric shapes, limited color palette, negative space, modern aesthetics, subtle gradients' },
-    { value: 'steampunk', label: '蒸汽朋克', text: 'Steampunk aesthetic, brass and copper machinery, Victorian architecture, gears and clockwork, warm amber lighting, industrial fog' },
-    { value: 'custom', label: '自定义', text: '' },
+    { value: 'cyberpunk', label: 'Cyberpunk / Neon', text: 'Cinematic neon-noir, teal-magenta palette, volumetric rain and fog, soft bloom, anamorphic lens, shallow depth of field, film grain' },
+    { value: 'filmic', label: 'Filmic Realism', text: 'Filmic realism, natural lighting, soft bokeh, 35mm lens, muted colors, subtle grain' },
+    { value: 'watercolor', label: 'Watercolor', text: 'Watercolor illustration, soft edges, pastel palette, paper texture, gentle gradients' },
+    { value: 'anime', label: 'Anime', text: 'Anime cinematic style, vibrant colors, clean lines, dramatic lighting, expressive characters' },
+    { value: 'noir', label: 'B&W Film Noir', text: 'Black and white film noir, high contrast, strong shadows, rim lighting, grainy texture' },
+    { value: 'ghibli', label: 'Ghibli Style', text: 'Studio Ghibli style, hand-painted backgrounds, soft lighting, whimsical atmosphere, lush nature, dreamy clouds' },
+    { value: 'oilpainting', label: 'Oil Painting', text: 'Classical oil painting style, rich textures, dramatic chiaroscuro lighting, Renaissance composition, visible brushstrokes' },
+    { value: 'pixar', label: 'Pixar 3D', text: 'Pixar 3D animation style, vibrant saturated colors, soft global illumination, expressive characters, detailed textures' },
+    { value: 'inkwash', label: 'Chinese Ink Wash', text: 'Chinese ink wash painting, minimalist composition, flowing brushstrokes, misty mountains, traditional aesthetics, monochrome with subtle color accents' },
+    { value: 'scifi', label: 'Sci-Fi Future', text: 'Futuristic sci-fi, sleek metallic surfaces, holographic displays, blue and orange color scheme, epic scale, lens flares' },
+    { value: 'fantasy', label: 'Fantasy / Magic', text: 'Epic fantasy style, magical glowing elements, dramatic lighting, mythical creatures, rich jewel tones, cinematic composition' },
+    { value: 'retro', label: 'Retro / Vintage', text: 'Vintage retro aesthetic, warm sepia tones, film grain, light leaks, 1970s color palette, nostalgic mood' },
+    { value: 'comic', label: 'American Comic', text: 'American comic book style, bold outlines, halftone dots, dynamic action poses, vibrant primary colors, dramatic shadows' },
+    { value: 'minimalist', label: 'Minimalist', text: 'Minimalist design, clean geometric shapes, limited color palette, negative space, modern aesthetics, subtle gradients' },
+    { value: 'steampunk', label: 'Steampunk', text: 'Steampunk aesthetic, brass and copper machinery, Victorian architecture, gears and clockwork, warm amber lighting, industrial fog' },
+    { value: 'custom', label: 'Custom', text: '' },
   ];
 
   const resolveStyleText = () => {
@@ -304,7 +304,7 @@ function App() {
                 className={`shot-image-wrapper ${isFailed ? 'shot-image-failed' : ''}`}
                 onClick={isFailed && !isRegenerating ? () => handleRegenerateShotImage(index) : (!isFailed && !isRegenerating ? () => setPreviewImage({ url: shot.imageUrl, name: `shot_${index + 1}.png` }) : undefined)}
                 style={{ cursor: isFailed || !isRegenerating ? 'pointer' : undefined }}
-                title={isFailed ? '点击重新生成' : '点击放大'}
+                title={isFailed ? 'Click to regenerate' : 'Click to enlarge'}
               >
                 {isRegenerating ? (
                   <Skeleton height={220} radius="md" />
@@ -320,7 +320,7 @@ function App() {
                 )}
                 {isFailed && !isRegenerating && (
                   <div className="shot-retry-overlay">
-                    <Text size="sm" c="white">点击重新生成</Text>
+                    <Text size="sm" c="white">Click to regenerate</Text>
                   </div>
                 )}
               </div>
@@ -348,7 +348,7 @@ function App() {
               <div className="video-overlay">
                 <ActionIcon
                   variant="filled"
-                  color="cyan"
+                  color="#5922C7"
                   size="xl"
                   radius="xl"
                   onClick={() => setFullscreenVideo(video.url)}
@@ -358,7 +358,7 @@ function App() {
               </div>
             </div>
             <Title order={4} className="shot-title" mb="sm">
-              生成视频 #{idx + 1}
+              Generated Video #{idx + 1}
             </Title>
           </Card>
         ))}
@@ -378,14 +378,12 @@ function App() {
       <Container size="xl" py="md">
         <div className="hero">
           <Group justify="space-between" align="center">
-            <Title order={1} className="hero-title" onClick={resetHome}>
-              StoryGen Atelier
-            </Title>
+            <img src="/pucho-logo.webp" alt="pucho.ai" className="hero-logo" onClick={resetHome} />
             <Button
               className="log-button"
               size="md"
               variant="gradient"
-              gradient={{ from: 'cyan', to: 'indigo' }}
+              gradient={{ from: '#5922C7', to: '#7C3AED' }}
               onClick={() => setShowLogs(true)}
             >
               Log
@@ -397,13 +395,13 @@ function App() {
           <form onSubmit={handleSubmit}>
             <Stack gap={8}>
               <Stack gap={4}>
-                <Text c="dimmed" className="form-label">
-                  故事描述
+                <Text className="form-label">
+                  Story Description
                 </Text>
                 <Textarea
                   value={sentence}
                   onChange={(e) => setSentence(e.target.value)}
-                  placeholder="输入一句话，例如：在雨中的霓虹都市里，一只猫寻找失落的记忆。"
+                  placeholder="Enter a story prompt, e.g.: In a rainy neon city, a cat searches for lost memories."
                   minRows={1}
                   maxRows={4}
                   required
@@ -412,21 +410,21 @@ function App() {
               </Stack>
 
               <Stack gap={4}>
-                <Text c="dimmed" className="form-label">
-                  风格
+                <Text className="form-label">
+                  Style
                 </Text>
                 <Group align="center" gap="md" wrap="wrap">
                   <Select
                     data={stylePresets.map((s) => ({ value: s.value, label: s.label }))}
                     value={styleOption}
                     onChange={(val) => setStyleOption(val || 'cyberpunk')}
-                    placeholder="选择风格"
+                    placeholder="Choose style"
                     maw={240}
                     className="style-select"
                   />
                   {styleOption === 'custom' ? (
                     <TextInput
-                      placeholder="自定义风格描述（可中文）"
+                      placeholder="Custom style description"
                       value={customStyle}
                       onChange={(e) => setCustomStyle(e.target.value)}
                       maw={360}
@@ -441,8 +439,8 @@ function App() {
 
               <Group align="center" justify="space-between" wrap="wrap" gap="md">
                 <div className="slider-block">
-                  <Text size="sm" c="dimmed" mb={6} className="form-label">
-                    分镜数量：{shotCount} 张
+                  <Text size="sm" mb={6} className="form-label">
+                    Shots: {shotCount}
                   </Text>
                   <Slider
                     min={2}
@@ -459,15 +457,15 @@ function App() {
                   />
                 </div>
                 <NumberInput
-                  label="精确输入"
+                  label="Exact"
                   min={2}
                   max={12}
                   value={shotCount}
                   onChange={(val) => setShotCount(Number(val) || 6)}
                   maw={140}
                 />
-                <Button type="submit" size="md" variant="gradient" gradient={{ from: 'cyan', to: 'indigo' }} loading={loading}>
-                  {loading ? '生成中...' : '生成分镜'}
+                <Button type="submit" size="md" variant="gradient" gradient={{ from: '#5922C7', to: '#7C3AED' }} loading={loading}>
+                  {loading ? 'Generating...' : 'Generate Storyboard'}
                 </Button>
               </Group>
             </Stack>
@@ -485,21 +483,21 @@ function App() {
             <Group justify="space-between" align="center" mb="md">
               <div>
                 <Title order={2} className="section-title">
-                  当前分镜
+                  Current Storyboard
                 </Title>
               </div>
               <Group gap="sm">
                 <Button variant="subtle" color="gray" onClick={handleSaveStory} disabled={!storyboard}>
-                  保存到画廊
+                  Save to Gallery
                 </Button>
                 <Button
                   variant="outline"
-                  color="teal"
+                  color="grape"
                   onClick={handleGenerateVideo}
                   loading={videoLoading}
                   disabled={!storyboard}
                 >
-                  {videoLoading ? '生成视频中...' : '从分镜生成视频'}
+                  {videoLoading ? 'Generating video...' : 'Generate Video from Storyboard'}
                 </Button>
               </Group>
             </Group>
@@ -513,7 +511,7 @@ function App() {
             <Group justify="space-between" align="center" mb="md">
               <div>
                 <Title order={2} className="section-title">
-                  画廊
+                  Gallery
                 </Title>
               </div>
             </Group>
@@ -532,14 +530,14 @@ function App() {
                     {story.title}
                   </Title>
                   <Text size="sm" c="dimmed">
-                    {new Date(story.createdAt).toLocaleString()} · {story.shotCount || story.storyboard.length} 张
+                    {new Date(story.createdAt).toLocaleString()} · {story.shotCount || story.storyboard.length} shots
                   </Text>
                   <div className="gallery-links">
-                    <button className="link-btn" onClick={() => handleViewStory(story)}>查看</button>
+                    <button className="link-btn" onClick={() => handleViewStory(story)}>View</button>
                     <span className="link-sep">·</span>
-                    <button className="link-btn" onClick={() => handleLoadStory(story.id)}>载入</button>
+                    <button className="link-btn" onClick={() => handleLoadStory(story.id)}>Load</button>
                     <span className="link-sep">·</span>
-                    <button className="link-btn" onClick={() => handleDeleteStory(story.id)}>删除</button>
+                    <button className="link-btn" onClick={() => handleDeleteStory(story.id)}>Delete</button>
                   </div>
                 </Card>
               ))}
@@ -558,7 +556,7 @@ function App() {
           {viewStory && (
             <Stack gap="md">
               <Text size="sm" c="dimmed">
-                {new Date(viewStory.createdAt).toLocaleString()} · {viewStory.shotCount || viewStory.storyboard.length} 张
+                {new Date(viewStory.createdAt).toLocaleString()} · {viewStory.shotCount || viewStory.storyboard.length} shots
               </Text>
               <ScrollArea h={520} type="always" scrollHideDelay={0}>
                 <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
@@ -637,7 +635,7 @@ function App() {
               radius="md"
               style={{ position: 'absolute', top: 8, right: 8, zIndex: 10 }}
               onClick={() => handleDownloadImage(previewImage.url, previewImage.name)}
-              title="下载图片"
+              title="Download image"
             >
               <span style={{ fontSize: 16 }}>⬇</span>
             </ActionIcon>

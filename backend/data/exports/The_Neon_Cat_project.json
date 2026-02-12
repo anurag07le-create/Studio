@@ -1,0 +1,250 @@
+{
+  "version": "2.0",
+  "exportedAt": "2026-02-09T10:44:40.086Z",
+  "generator": "pucho.ai StoryGen",
+  "project": {
+    "id": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+    "title": "The Neon Cat",
+    "description": null,
+    "createdAt": "2026-02-09T08:41:26.829Z",
+    "updatedAt": "2026-02-09T08:44:35.416Z",
+    "status": "draft",
+    "style": "Cinematic neon-noir, teal-magenta palette, volumetric rain and fog, soft bloom, anamorphic lens, shallow depth of field, film grain",
+    "settings": null,
+    "ownerEmail": null
+  },
+  "script": {
+    "filename": "test_script.fountain",
+    "format": "fountain",
+    "parsedContent": {
+      "title": "The Neon Cat",
+      "author": "",
+      "format": "fountain",
+      "scenes": [
+        {
+          "heading": "INT. NEON CITY ALLEY - NIGHT",
+          "location": "NEON CITY ALLEY",
+          "timeOfDay": "NIGHT",
+          "description": "Rain pours down in sheets, neon lights reflecting off the wet asphalt. A sleek mechanical cat with glowing blue eyes steps cautiously through a puddle.\n\nThe cat pauses, its ears twitching as it detects a signal.\n\nIn the city that never sleeps, one cat searches for what was taken from it.\n\nThe cat leaps onto a dumpster, scanning the alley with infrared vision.",
+          "dialogue": "",
+          "notes": ""
+        },
+        {
+          "heading": "EXT. ROOFTOP - NIGHT",
+          "location": "ROOFTOP",
+          "timeOfDay": "NIGHT",
+          "description": "The cat bounds across rooftops, silhouetted against the massive holographic billboard. The city stretches endlessly below.\n\nMemories. Stolen by the ones who built it.\n\nThe cat reaches the edge of a building and looks down at a heavily guarded corporate tower.",
+          "dialogue": "",
+          "notes": ""
+        },
+        {
+          "heading": "INT. CORPORATE TOWER LOBBY - NIGHT",
+          "location": "CORPORATE TOWER LOBBY",
+          "timeOfDay": "NIGHT",
+          "description": "Sleek chrome and glass. Security drones patrol the corridors. The cat slips through an air vent, moving silently.\n\nAll clear on level 12.\n\nThe cat drops from the ceiling behind the guard and continues deeper into the building.",
+          "dialogue": "",
+          "notes": ""
+        },
+        {
+          "heading": "INT. MEMORY VAULT - NIGHT",
+          "location": "MEMORY VAULT",
+          "timeOfDay": "NIGHT",
+          "description": "A vast chamber filled with glowing data crystals. Each one contains stolen memories. The cat finds the crystal with a faint blue glow matching its own eyes.\n\nThe cat touches the crystal with its paw. Memories flood back - a child laughing, a warm home, the smell of rain.\n\nAnd in that moment, it remembered everything.\n\nThe cat grabs the crystal and runs, alarms blaring behind it.",
+          "dialogue": "",
+          "notes": ""
+        },
+        {
+          "heading": "EXT. CITY SKYLINE - DAWN",
+          "location": "CITY SKYLINE",
+          "timeOfDay": "DAWN",
+          "description": "The cat sits on the highest rooftop, crystal safely tucked under its paw. The sun rises over the neon city, painting everything in gold.\n\nSome things are worth fighting for. Even if you're just a cat.\n\nFADE OUT.",
+          "dialogue": "",
+          "notes": ""
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "7a4c8e99-85ea-453f-814a-d378a25d03e9",
+      "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+      "scriptId": "caf62edd-5194-4696-b071-5aa320ae635a",
+      "sceneNumber": 1,
+      "heading": "INT. NEON CITY ALLEY - NIGHT",
+      "location": "Neon City Alley",
+      "timeOfDay": "Night",
+      "description": "Rain pours down in sheets, neon lights reflecting off the wet asphalt. A sleek mechanical cat with glowing blue eyes steps cautiously through a puddle.\n\nThe cat pauses, its ears twitching as it detects a signal.\n\nIn the city that never sleeps, one cat searches for what was taken from it.\n\nThe cat leaps onto a dumpster, scanning the alley with infrared vision.",
+      "dialogue": null,
+      "notes": "Atmospheric noir mood. Requires rain machines and high-contrast neon lighting setup. Focus on the cat's mechanical details.",
+      "sortOrder": 0,
+      "createdAt": "2026-02-09T08:51:20.349Z",
+      "shots": [
+        {
+          "id": "0e96e01b-c887-4686-be38-9becd72aa061",
+          "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+          "sceneId": "7a4c8e99-85ea-453f-814a-d378a25d03e9",
+          "shotNumber": 1,
+          "prompt": "Cinematic low angle ground level shot, a sleek mechanical cat paw stepping into a reflective rain puddle causing a splash, full robotic feline body visible in sharp focus, matte black carbon-fiber plating, glowing blue optical eyes, heavy rain pouring in sheets, wet asphalt reflecting teal and magenta neon signs, volumetric fog, dark noir atmosphere, anamorphic lens flare, 8k resolution, photorealistic.",
+          "description": "The mechanical cat steps into a puddle, the camera tracking its movement through the rain-slicked alley.",
+          "shotStory": "We establish the gritty, soaked atmosphere of the city and the precise, weighted movement of our protagonist. The splash disrupts the neon reflections, grounding the mechanical being in the physical world.",
+          "cameraAngle": "Low angle / Bug's eye view",
+          "cameraMovement": "Tracking shot moving alongside the subject",
+          "duration": 6,
+          "mood": "mysterious",
+          "imageUrl": "[base64-image]",
+          "heroSubject": "A sleek, agile robotic feline with matte black carbon-fiber plating, exposed articulated joints, faint luminescent teal circuitry lines running along its spine, and piercing sapphire blue optical sensor eyes.",
+          "sortOrder": 0,
+          "createdAt": "2026-02-09T09:26:52.517Z",
+          "characterRefs": null,
+          "locationRef": null,
+          "cameraPresetId": null,
+          "customCameraPrompt": null
+        },
+        {
+          "id": "c6c2d4c7-dd7a-431f-a3d5-d4ee176d4dd3",
+          "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+          "sceneId": "7a4c8e99-85ea-453f-814a-d378a25d03e9",
+          "shotNumber": 2,
+          "prompt": "Extreme close-up of a mechanical cat's face, piercing sapphire blue glowing camera-lens eyes, rain droplets sliding down metallic carbon-fiber skin, intricate servo mechanisms visible near the ears, shallow depth of field, creamy teal and magenta neon bokeh in background, high contrast lighting, cinematic film grain.",
+          "description": "A tight focus on the cat's face as it freezes, ears twitching mechanically to process a sound.",
+          "shotStory": "The forward momentum stops abruptly as the hunter becomes the observer. This intimate angle highlights the cat's sensory processing and the internal technology reacting to an unseen signal.",
+          "cameraAngle": "Extreme close-up",
+          "cameraMovement": "Static with a subtle rack focus to the eyes",
+          "duration": 4,
+          "mood": "tense",
+          "imageUrl": null,
+          "heroSubject": null,
+          "sortOrder": 1,
+          "createdAt": "2026-02-09T09:26:52.517Z",
+          "characterRefs": null,
+          "locationRef": null,
+          "cameraPresetId": null,
+          "customCameraPrompt": null
+        },
+        {
+          "id": "3c8cc8f9-0290-4ccd-a2ba-b29f93b78af1",
+          "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+          "sceneId": "7a4c8e99-85ea-453f-814a-d378a25d03e9",
+          "shotNumber": 3,
+          "prompt": "Medium-wide shot looking up from the alley floor, the mechanical cat is perched atop a rusted metal dumpster, silhouette distinct against a backdrop of towering cyberpunk buildings and buzzing neon signs, heavy volumetric rain, atmospheric fog, looking down into the alley, teal and pink color grading, dramatic noir shadows, anamorphic widescreen composition.",
+          "description": "The cat is now elevated on a dumpster, surveying the alleyway below with dominance.",
+          "shotStory": "Having identified the signal, the cat takes the high ground to utilize its infrared scanning. This shot emphasizes the scale of the city against the cat and establishes its tactical advantage.",
+          "cameraAngle": "Low angle wide shot",
+          "cameraMovement": "Slow dolly out and tilt up",
+          "duration": 8,
+          "mood": "vigilant",
+          "imageUrl": null,
+          "heroSubject": null,
+          "sortOrder": 2,
+          "createdAt": "2026-02-09T09:26:52.517Z",
+          "characterRefs": null,
+          "locationRef": null,
+          "cameraPresetId": null,
+          "customCameraPrompt": null
+        }
+      ]
+    },
+    {
+      "id": "e9b4101e-5f07-45ca-9b09-716275264a37",
+      "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+      "scriptId": "caf62edd-5194-4696-b071-5aa320ae635a",
+      "sceneNumber": 2,
+      "heading": "EXT. ROOFTOP - NIGHT",
+      "location": "Rooftop",
+      "timeOfDay": "Night",
+      "description": "The cat bounds across rooftops, silhouetted against the massive holographic billboard. The city stretches endlessly below.\n\nMemories. Stolen by the ones who built it.\n\nThe cat reaches the edge of a building and looks down at a heavily guarded corporate tower.",
+      "dialogue": null,
+      "notes": "Wide shot required for city scale. Heavy VFX needed for the holographic billboard and background skyline. Dynamic movement pacing.",
+      "sortOrder": 1,
+      "createdAt": "2026-02-09T08:51:20.349Z",
+      "shots": []
+    },
+    {
+      "id": "924c5af3-fadd-4726-a963-a2b4d7075f80",
+      "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+      "scriptId": "caf62edd-5194-4696-b071-5aa320ae635a",
+      "sceneNumber": 3,
+      "heading": "INT. CORPORATE TOWER LOBBY - NIGHT",
+      "location": "Corporate Tower Lobby",
+      "timeOfDay": "Night",
+      "description": "Sleek chrome and glass. Security drones patrol the corridors. The cat slips through an air vent, moving silently.\n\nAll clear on level 12.\n\nThe cat drops from the ceiling behind the guard and continues deeper into the building.",
+      "dialogue": null,
+      "notes": "Tense, quiet pacing. Set design should be sterile, chrome, and cold to contrast with the gritty alley. Requires drone props or CGI.",
+      "sortOrder": 2,
+      "createdAt": "2026-02-09T08:51:20.349Z",
+      "shots": []
+    },
+    {
+      "id": "8d5fd08b-569d-4558-a4df-4d13df6df45b",
+      "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+      "scriptId": "caf62edd-5194-4696-b071-5aa320ae635a",
+      "sceneNumber": 4,
+      "heading": "INT. MEMORY VAULT - NIGHT",
+      "location": "Memory Vault",
+      "timeOfDay": "Night",
+      "description": "A vast chamber filled with glowing data crystals. Each one contains stolen memories. The cat finds the crystal with a faint blue glow matching its own eyes.\n\nThe cat touches the crystal with its paw. Memories flood back - a child laughing, a warm home, the smell of rain.\n\nAnd in that moment, it remembered everything.\n\nThe cat grabs the crystal and runs, alarms blaring behind it.",
+      "dialogue": null,
+      "notes": "Emotional peak of the sequence. Lighting effects crucial for the glowing data crystals. Sound design needed to convey the 'flood' of internal memories.",
+      "sortOrder": 3,
+      "createdAt": "2026-02-09T08:51:20.349Z",
+      "shots": []
+    },
+    {
+      "id": "9cd71e7c-8121-4839-bcd2-0fc04e424048",
+      "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+      "scriptId": "caf62edd-5194-4696-b071-5aa320ae635a",
+      "sceneNumber": 5,
+      "heading": "EXT. CITY SKYLINE - DAWN",
+      "location": "City Skyline",
+      "timeOfDay": "Dawn",
+      "description": "The cat sits on the highest rooftop, crystal safely tucked under its paw. The sun rises over the neon city, painting everything in gold.\n\nSome things are worth fighting for. Even if you're just a cat.\n\nFADE OUT.",
+      "dialogue": null,
+      "notes": "Lighting transition from cool night tones to warm dawn gold. Slow, contemplative pacing to allow for a 'hero shot' fade out.",
+      "sortOrder": 4,
+      "createdAt": "2026-02-09T08:51:20.349Z",
+      "shots": []
+    }
+  ],
+  "consistency": {
+    "characters": [
+      {
+        "id": "9a60b305-a24f-4c68-aef5-549e9be42681",
+        "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+        "name": "Neon Cat",
+        "description": "A sleek mechanical cat with glowing blue eyes, chrome and matte black body panels, articulated joints with visible blue circuitry lines, cat-sized robot",
+        "referenceImageUrl": "[base64-image]",
+        "traits": {
+          "build": "Sleek robotic feline",
+          "clothing": "Chrome and matte black panels",
+          "distinguishing_features": "Glowing blue eyes, blue circuitry lines"
+        },
+        "createdAt": "2026-02-09T09:48:04.280Z",
+        "updatedAt": "2026-02-09T09:48:47.379Z"
+      }
+    ],
+    "locations": [],
+    "styleLock": {
+      "id": "4d790bf4-07bf-45bc-9863-e78312de3f5b",
+      "projectId": "e31371b1-f91c-48d6-ab85-0e39bc704933",
+      "styleName": "Photorealistic Cinema",
+      "stylePrompt": "Ultra-photorealistic cinematic photography, natural lighting, 35mm film look, shallow depth of field, ARRI camera aesthetic, color-graded in warm tones.",
+      "referenceImageUrl": null,
+      "extractedTraits": {
+        "palette": "Natural colors, warm grade",
+        "medium": "Photorealistic 35mm film",
+        "lighting_style": "Natural/practical lighting",
+        "texture": "Subtle film grain",
+        "mood": "Cinematic, grounded, real"
+      },
+      "createdAt": "2026-02-09T10:17:20.354Z",
+      "updatedAt": "2026-02-09T10:17:20.354Z"
+    }
+  },
+  "stats": {
+    "sceneCount": 5,
+    "shotCount": 3,
+    "imagesGenerated": 1,
+    "characterCount": 1,
+    "locationCount": 0
+  }
+}

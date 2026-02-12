@@ -2,10 +2,53 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const BASE_IMAGE_STYLE = process.env.GEMINI_IMAGE_STYLE || "Cinematic neon-noir, teal-magenta palette, volumetric rain and fog, soft bloom, anamorphic lens, shallow depth of field, subtle film grain, 16:9 composition";
 
-// Use Gemini 3 Pro Image Preview to generate frame-level artwork.
-// referenceImageBase64: base64 string of the first shot image (for character consistency)
-// heroSubject: detailed character description from shot 1
-exports.generateImage = async (prompt, previousStyleHint = "", styleOverride, referenceImageBase64 = null, heroSubject = "") => {
+/**
+ * Generate a storyboard frame image using Gemini.
+ *
+ * Supports two calling conventions for backward compatibility:
+ *   1. Legacy: generateImage(prompt, previousStyleHint, styleOverride, referenceImageBase64, heroSubject)
+ *   2. New:    generateImage(prompt, options)
+ *
+ * Options object:
+ *   - previousStyleHint: prompt of previous shot for style continuity
+ *   - styleOverride: custom style description
+ *   - referenceImages: [{ base64, mimeType, label, type }] - multiple reference images
+ *   - heroSubject: detailed character description for primary character
+ *   - consistencyPrefix: pre-built consistency prompt text
+ */
+exports.generateImage = async (prompt, optionsOrStyleHint = "", styleOverride, referenceImageBase64 = null, heroSubject = "") => {
+  // Detect calling convention
+  let options;
+  if (typeof optionsOrStyleHint === 'object' && optionsOrStyleHint !== null) {
+    // New-style call
+    options = optionsOrStyleHint;
+  } else {
+    // Legacy call — convert to options
+    options = {
+      previousStyleHint: optionsOrStyleHint || '',
+      styleOverride: styleOverride || '',
+      referenceImages: [],
+      heroSubject: heroSubject || '',
+    };
+    // Convert single reference image to array
+    if (referenceImageBase64) {
+      options.referenceImages = [{
+        base64: referenceImageBase64,
+        mimeType: 'image/png',
+        label: 'Main character',
+        type: 'character',
+      }];
+    }
+  }
+
+  const {
+    previousStyleHint = '',
+    styleOverride: styleOvr = '',
+    referenceImages = [],
+    heroSubject: hero = '',
+    consistencyPrefix = '',
+  } = options;
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey || apiKey.trim() === "" || apiKey.startsWith("your_")) {
     console.log("No valid GEMINI_API_KEY found. Using placeholder image.");
@@ -14,39 +57,51 @@ exports.generateImage = async (prompt, previousStyleHint = "", styleOverride, re
   }
 
   const imageModel = process.env.GEMINI_IMAGE_MODEL || "gemini-3-pro-image-preview";
-  const appliedStyle = styleOverride && styleOverride.trim() !== '' ? styleOverride.trim() : BASE_IMAGE_STYLE;
+  const appliedStyle = (styleOvr || styleOverride || '').trim() || BASE_IMAGE_STYLE;
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: imageModel });
 
   // Build character consistency instruction
-  const heroInstruction = heroSubject
-    ? `CRITICAL - Main Character Description (MUST match exactly): ${heroSubject}.`
+  const heroInstruction = hero
+    ? `CRITICAL - Main Character Description (MUST match exactly): ${hero}.`
     : "";
 
-  // Slightly tighten the prompt for visual fidelity and cross-shot consistency.
+  // Style continuity
   const styleGlue = previousStyleHint
-    ? `Maintain exact style continuity with previous shot: "${previousStyleHint}".`
+    ? `Maintain exact style continuity with previous shot.`
     : "Establish the base look; following shots must keep this style.";
+
   const imagePrompt = `
     Role: Cinematic frame artist.
     Goal: Render a single storyboard frame that matches the shared style and camera feel.
+    ${consistencyPrefix ? consistencyPrefix + '\n' : ''}
     ${heroInstruction}
     Style: ${appliedStyle}.
     Continuity: ${styleGlue}
     Frame description: ${prompt}.
-    Constraints: no text, no captions, 16:9, high fidelity. The main character MUST look identical to the reference image if provided.
+    Constraints: no text, no captions, 16:9, high fidelity. All characters MUST look identical to their reference images if provided.
   `;
 
-  // Build content parts - include reference image if available
+  // Build content parts — include ALL reference images
   const contentParts = [];
-  if (referenceImageBase64) {
+
+  if (referenceImages.length > 0) {
+    for (const ref of referenceImages) {
+      if (!ref.base64) continue;
+      contentParts.push({
+        inlineData: {
+          mimeType: ref.mimeType || "image/png",
+          data: ref.base64,
+        },
+      });
+      const refType = ref.type === 'location' ? 'location/setting' : 'character';
+      contentParts.push({
+        text: `Reference image above shows ${ref.label || 'a reference'}. This ${refType} MUST look identical in the generated image.`,
+      });
+    }
     contentParts.push({
-      inlineData: {
-        mimeType: "image/png",
-        data: referenceImageBase64,
-      },
+      text: `Generate a new image where ALL referenced characters and locations (identical appearance, clothing, colors, architecture) appear as described below:\n\n${imagePrompt}`,
     });
-    contentParts.push({ text: "Reference image above shows the main character. Generate a new image where this SAME character (identical appearance, clothing, colors) performs the action described below:\n\n" + imagePrompt });
   } else {
     contentParts.push({ text: imagePrompt });
   }
@@ -61,9 +116,9 @@ exports.generateImage = async (prompt, previousStyleHint = "", styleOverride, re
       ],
       generationConfig: {
         responseModalities: ["TEXT", "IMAGE"],
-        imageConfig:{
-          aspectRatio: "16:9"
-        }
+        imageConfig: {
+          aspectRatio: "16:9",
+        },
       },
     });
 
@@ -74,8 +129,7 @@ exports.generateImage = async (prompt, previousStyleHint = "", styleOverride, re
         if (part.inlineData?.data) {
           const mimeType = part.inlineData.mimeType || "image/png";
           const base64 = part.inlineData.data;
-          console.log("Image generated successfully via Gemini.");
-          // Return a data URL so the frontend can render directly.
+          console.log(`Image generated successfully via Gemini (${referenceImages.length} refs).`);
           return `data:${mimeType};base64,${base64}`;
         }
       }
