@@ -1,5 +1,8 @@
 // Shared API client for V1 and V2 endpoints
-const ENV_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3005/api';
+const PROD_URL = 'https://storygen-backend-9uof.onrender.com/api';
+const DEV_URL = 'http://localhost:3005/api';
+
+const ENV_API_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? PROD_URL : DEV_URL);
 // Remove trailing slash if present to avoid double slashes
 const BASE_URL = ENV_API_URL.replace(/\/$/, '');
 

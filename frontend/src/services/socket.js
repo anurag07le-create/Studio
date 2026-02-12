@@ -7,7 +7,9 @@ let socket = null;
 
 export function getSocket() {
   if (!socket) {
-    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3005/api';
+    const PROD_URL = 'https://storygen-backend-9uof.onrender.com/api';
+    const DEV_URL = 'http://localhost:3005/api';
+    const apiUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? PROD_URL : DEV_URL);
     const url = apiUrl.replace(/\/api\/?$/, ''); // Remove /api suffix for root URL
     socket = io(url, {
       autoConnect: false,
